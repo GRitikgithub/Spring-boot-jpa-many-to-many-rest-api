@@ -36,13 +36,14 @@ public class StudentService {
         }else{
             for(Student student: studentList){
                 StudentResponse studentResponse = new StudentResponse();
-                studentResponse.setStudentId(student.getId());
+                studentResponse.setStudentId(student.getStudentId());
                 studentResponse.setFirstName(student.getFirstName());
                 studentResponse.setLastName(student.getLastName());
                 studentResponse.setDob(student.getDob());
                 studentResponse.setGender(student.getGender());
                 studentResponseList.add(studentResponse);
             }
+            log.info("Fetch list of all students");
             return studentResponseList;
         }
     }
@@ -51,13 +52,15 @@ public class StudentService {
         Optional<Student> student=studentRepository.findById(studentId);
         StudentResponse studentResponse=new StudentResponse();
         if(student.isPresent()){
-            studentResponse.setStudentId(student.get().getId());
+            log.info("Fetch data by particular student id "+studentId);
+            studentResponse.setStudentId(student.get().getStudentId());
             studentResponse.setFirstName(student.get().getFirstName());
             studentResponse.setLastName(student.get().getLastName());
             studentResponse.setDob(student.get().getDob());
             studentResponse.setGender(student.get().getGender());
             return studentResponse;
         }else{
+            log.info("Data not found with student id "+studentId);
             throw new DataNotFoundException("Data not found with student id "+studentId);
         }
     }
@@ -74,11 +77,13 @@ public class StudentService {
     public void deleteData(Integer studentId) {
         List<StudentCourse> courseList=studentCourseRepository.findBystudentId(studentId);
         if(courseList.isEmpty()){
+            log.info("Data is not found");
             throw new DataNotFoundException("Data is not found");
         }else{
         studentCourseRepository.deleteAll(courseList);
         Optional<Student> student = studentRepository.findById(studentId);
         studentRepository.delete(student.get());
+        log.info("Data is delete successfully with student id "+studentId);
         }
     }
 }

@@ -9,9 +9,7 @@ import com.exercise.FinalProject.repository.StudentCourseRepository;
 import com.exercise.FinalProject.repository.StudentRepository;
 import com.exercise.FinalProject.response.CourseResponse;
 import com.exercise.FinalProject.response.StudentResponse;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,15 +35,17 @@ public class StudentCourseService {
         List<CourseResponse> courseResponseList = new ArrayList<>();
         Optional<Student> studentOptional = studentRepository.findById(studentId);
         if (studentOptional.isEmpty()) {
+            log.info("Data is not found");
             throw new DataNotFoundException("Data is not found");
         } else {
             if (!CollectionUtils.isEmpty(studentOptional.get().getCourses())) {
                 for (Course course : studentOptional.get().getCourses()) {
                     CourseResponse courseResponse = new CourseResponse();
-                    courseResponse.setCourseId(course.getId());
+                    courseResponse.setCourseId(course.getCourseId());
                     courseResponse.setName(course.getName());
                     courseResponseList.add(courseResponse);
                 }
+                log.info("Fetch list of all courses the student is registered.");
                 return courseResponseList;
             } else {
                 return null;
@@ -56,18 +56,20 @@ public class StudentCourseService {
         List<StudentResponse> studentResponseList=new ArrayList<>();
         Optional<Course> courseOptional=courseRepository.findById(courseId);
         if(courseOptional.isEmpty()){
+            log.info("Data is not found");
             throw new DataNotFoundException("Data is not found");
         }else{
             if(!CollectionUtils.isEmpty(courseOptional.get().getStudents())){
                 for(Student student:courseOptional.get().getStudents()){
                     StudentResponse studentResponse=new StudentResponse();
-                    studentResponse.setStudentId(student.getId());
+                    studentResponse.setStudentId(student.getStudentId());
                     studentResponse.setFirstName(student.getFirstName());
                     studentResponse.setLastName(student.getLastName());
                     studentResponse.setDob(student.getDob());
                     studentResponse.setGender(student.getGender());
                     studentResponseList.add(studentResponse);
                 }
+                log.info("Fetch list of all students registered in given course");
                 return studentResponseList;
             }else{
                 return null;
@@ -82,12 +84,17 @@ public class StudentCourseService {
         Optional<StudentCourse> studentCourseOptional=studentCourseRepository.
                 findByStudentIdAndCourseId(studentId,courseId);
         if(studentCourseOptional.isPresent()){
+            log.info("Student is already enrolled");
             throw new DataNotFoundException("Student is already enrolled");
         }else{
             StudentCourse studentCourse=new StudentCourse();
+            studentCourse.setStudentId(studentId);
+            studentCourse.setCourseId(courseId);
+            log.info("Enroll student in a course");
             return new ResponseEntity<>(studentCourseRepository.save(studentCourse), HttpStatus.CREATED);
         }
         }else{
+            log.info("Student id or Course id doesn't exist");
             throw new DataNotFoundException("Student id or Course id doesn't exist");
         }
     }
@@ -98,7 +105,7 @@ public class StudentCourseService {
             Optional<StudentCourse> studentCourseOptional=studentCourseRepository.
                     findByStudentIdAndCourseId(studentCourse.getStudentId(),studentCourse.getCourseId());
             if(studentCourseOptional.isPresent()){
-                throw new DataNotFoundException("Enroll course is not found");
+                throw new DataNotFoundException("Enroll course already");
             }else{
                 StudentCourse studentCourse1 = studentCourseOptional.get();
                 studentCourse1.setCourseId(studentCourse.getCourseId());
@@ -114,7 +121,9 @@ public class StudentCourseService {
                 findByStudentIdAndCourseId(studentId,courseId);
         if(studentCourseOptional.isPresent()){
             studentCourseRepository.delete(studentCourseOptional.get());
+            log.info("Delete the course of the student");
         }else{
+            log.info("Student is not enroll with that course");
             throw new DataNotFoundException("Student is not enroll with that course");
         }
     }

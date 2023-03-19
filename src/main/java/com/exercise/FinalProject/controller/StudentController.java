@@ -21,7 +21,6 @@ public class StudentController {
 
     @GetMapping("/students")
     public List<StudentResponse> getData() {
-        log.info("Fetch list of all students");
         return studentService.getAllData();
     }
 
@@ -33,7 +32,8 @@ public class StudentController {
     @PostMapping("/students")
     public String addData(@RequestBody StudentRequest student) {
         this.studentService.save(student);
-        return "Data is insert successfully....";
+        log.info("New student data insert");
+        return "New student data insert successfully....";
     }
     @DeleteMapping("/students/{studentId}")
     public void delete(@PathVariable Integer studentId) {

@@ -34,10 +34,11 @@ public class CourseService {
         }else{
             for(Course course: courseList){
                 CourseResponse courseResponse = new CourseResponse();
-                courseResponse.setCourseId(course.getId());
+                courseResponse.setCourseId(course.getCourseId());
                 courseResponse.setName(course.getName());
                 courseResponseList.add(courseResponse);
             }
+            log.info("Fetch list of all courses");
             return courseResponseList;
         }
     }
@@ -51,11 +52,13 @@ public class CourseService {
     public void deleteData(Integer courseId) {
         List<StudentCourse> courseList=studentCourseRepository.findByCourseId(courseId);
         if(courseList.isEmpty()){
+            log.info("Data is not found");
             throw new DataNotFoundException("Data is not found");
         }else{
         studentCourseRepository.deleteAll(courseList);
         Optional<Course> course = courseRepository.findById(courseId);
         courseRepository.delete(course.get());
+        log.info("Data is delete successfully with course id "+courseId);
     }
     }
 }

@@ -22,15 +22,15 @@ public class CourseController {
 
     @GetMapping("/courses")
     public List<CourseResponse> getData() {
-        log.info("Fetch list of all courses");
         return courseService.getAllData();
     }
     @PostMapping("/courses")
     public String addData(@RequestBody CourseRequest course) {
         this.courseService.insert(course);
+        log.info("New course data insert");
         return "Data is insert successfully....";
     }
-    @DeleteMapping("/courses/courseId")
+    @DeleteMapping("/courses/{courseId}")
     public void delete(@PathVariable Integer courseId){
         this.courseService.deleteData(courseId);
     }

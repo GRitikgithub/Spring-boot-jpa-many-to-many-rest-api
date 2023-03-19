@@ -40,8 +40,8 @@ public class StudentCourseController {
         studentCourseService.deleteData(studentId,courseId);
     }
    @PutMapping("students/{studentId}/course/{courseId}")
-    public String update(@PathVariable Integer studentId, @PathVariable Integer courseId,
-                         @RequestBody StudentCourse studentCourse){
+    public String update(@PathVariable Integer studentId, @PathVariable Integer courseId){
+        StudentCourse studentCourse =new StudentCourse();
         studentCourse.setStudentId(studentId);
         studentCourse.setCourseId(courseId);
         this.studentCourseService.updateCourse(studentCourse);
