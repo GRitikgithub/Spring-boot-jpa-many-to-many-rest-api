@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public class CourseService {
         List<CourseResponse> courseResponseList = new ArrayList<>();
         List<Course> courseList = courseRepository.findAll();
         if(CollectionUtils.isEmpty(courseList)){
-            return null;
+            return Collections.emptyList();
         }else{
             for(Course course: courseList){
                 CourseResponse courseResponse = new CourseResponse();
@@ -57,15 +58,19 @@ public class CourseService {
     }
 
     public void deleteData(Integer courseId) {
-        List<StudentCourse> courseList=studentCourseRepository.findByCourseId(courseId);
-        if(courseList.isEmpty()){
-            log.info("Data is not found");
-            throw new DataNotFoundException("Data is not found");
-        }else{
-        studentCourseRepository.deleteAll(courseList);
         Optional<Course> course = courseRepository.findById(courseId);
-        courseRepository.delete(course.get());
-        log.info("Data is delete successfully with course id "+courseId);
-    }
+        if(course.isPresent()){
+            List<StudentCourse> courseList=studentCourseRepository.findByCourseId(courseId);
+            if(courseList.isEmpty()){
+                log.info("Data is not found");
+                throw new DataNotFoundException("Data is not found");
+            }else{
+                studentCourseRepository.deleteAll(courseList);
+                courseRepository.delete(course.get());
+                log.info("Data is delete successfully with course id "+courseId);
+        }
+    }else{
+            throw new DataNotFoundException("Course id doesn't exist");
+        }
     }
 }
