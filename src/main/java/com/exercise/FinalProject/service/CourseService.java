@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +45,15 @@ public class CourseService {
     }
 
     public ResponseEntity<Course> insert(CourseRequest course) {
-        Course course1= new Course();
-        course1.setName(course.getName());
-        return new ResponseEntity<>(courseRepository.save(course1), HttpStatus.CREATED);
+        Course duplicateCourse=courseRepository.duplicateCourse(course.getName());
+        if(ObjectUtils.isEmpty(duplicateCourse)){
+            Course course1= new Course();
+            course1.setName(course.getName());
+            return new ResponseEntity<>(courseRepository.save(course1), HttpStatus.CREATED);
+        }else{
+            throw new DataNotFoundException("Same course is already exist");
+        }
+
     }
 
     public void deleteData(Integer courseId) {

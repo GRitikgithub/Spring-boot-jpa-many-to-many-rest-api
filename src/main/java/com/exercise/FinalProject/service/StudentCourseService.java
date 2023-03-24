@@ -98,20 +98,25 @@ public class StudentCourseService {
             throw new DataNotFoundException("Student id or Course id doesn't exist");
         }
     }
-    public ResponseEntity<StudentCourse> updateCourse(StudentCourse studentCourse){
-        Optional<Student> studentOptional=studentRepository.findById(studentCourse.getStudentId());
-        Optional<Course> courseOptional=courseRepository.findById(studentCourse.getCourseId());
-        if (studentOptional.isPresent()&&courseOptional.isPresent()){
-            Optional<StudentCourse> studentCourseOptional=studentCourseRepository.
-                    findByStudentIdAndCourseId(studentCourse.getStudentId(),studentCourse.getCourseId());
-            if(studentCourseOptional.isPresent()){
-                throw new DataNotFoundException("Enroll course already");
-            }else{
-                StudentCourse studentCourse1 = studentCourseOptional.get();
-                studentCourse1.setCourseId(studentCourse.getCourseId());
-                return new ResponseEntity<>(studentCourseRepository.save(studentCourse1),HttpStatus.OK);
+    public ResponseEntity<StudentCourse> updateCourse(Integer studentId, Integer courseId,StudentCourse studentCourse){
+        Optional<Student> studentOptional = studentRepository.findById(studentId);
+        Optional<Course> courseOptional = courseRepository.findById(courseId);
+        if (studentOptional.isPresent() && courseOptional.isPresent()) {
+            Optional<StudentCourse> studentCourseOptional = studentCourseRepository.
+                    findByStudentIdAndCourseId(studentId, courseId);
+            if (studentCourseOptional.isPresent()) {
+                Optional<Course> newCourseOptional = courseRepository.findById(studentCourse.getCourseId());
+                if (newCourseOptional.isPresent()) {
+                    StudentCourse studentCourse1 = studentCourseOptional.get();
+                    studentCourse1.setCourseId(studentCourse.getCourseId());
+                    return new ResponseEntity<>(studentCourseRepository.save(studentCourse1), HttpStatus.CREATED);
+                } else {
+                    throw new DataNotFoundException("New Course id doesn't exist");
+                }
+            } else {
+                throw new DataNotFoundException("course is not enroll with student");
             }
-        }else {
+        } else {
             throw new DataNotFoundException("Student id or Course id doesn't exist");
         }
     }

@@ -2,9 +2,7 @@ package com.exercise.FinalProject.controller;
 
 import com.exercise.FinalProject.repository.CourseRepository;
 import com.exercise.FinalProject.request.CourseRequest;
-import com.exercise.FinalProject.request.StudentRequest;
 import com.exercise.FinalProject.response.CourseResponse;
-import com.exercise.FinalProject.response.StudentResponse;
 import com.exercise.FinalProject.service.CourseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
